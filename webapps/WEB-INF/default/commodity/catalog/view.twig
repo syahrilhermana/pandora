@@ -1,0 +1,57 @@
+<table class="table table-bordered">
+    <tr>
+        <td width="200px;">Group Type</td>
+        <td>
+            {% if catalog.com_type == 'G' %}
+                Barang
+            {% elseif catalog.com_type == 'S' %}
+                Jasa
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>Material Name</td>
+        <td>{{ material_name(catalog.com_group, 'N') }}</td>
+    </tr>
+    <tr>
+        <td>Catalog Code</td>
+        <td>{{ catalog.com_catalog_code }}</td>
+    </tr>
+    <tr>
+        <td>UoM</td>
+        <td>{{ UoM(catalog.adm_uom) }}</td>
+    </tr>
+    <tr>
+        <td>Additional Description</td>
+        <td>{{ catalog.com_description|nl2br }}</td>
+    </tr>
+    <tr>
+        <td>Manufacture</td>
+        <td>{{ catalog.com_manufacture }}</td>
+    </tr>
+    <tr>
+        <td>Brand</td>
+        <td>{{ catalog.com_brand }}</td>
+    </tr>
+    <tr>
+        <td>Part Number</td>
+        <td>{{ catalog.com_part_number }}</td>
+    </tr>
+    <tr>
+        <td>Serial Number</td>
+        <td>{{ catalog.com_serial_number }}</td>
+    </tr>
+    {#<tr>#}
+        {#<td>Image</td>#}
+        {#<td>{{ catalog.com_image }}</td>#}
+    {#</tr>#}
+    <tr>
+        <td>Is Asset</td>
+        <td>{{ catalog.is_asset }}</td>
+    </tr>
+</table>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</div>

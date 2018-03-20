@@ -1,0 +1,139 @@
+<form id="form-catalog" action="{{ site_url('commodity/catalog/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Group Type *</label>
+            <div class="col-md-7">
+                <select class="form-control" name="type" onchange="switchType(this)" required>
+                     <option value="G" {% if catalog.com_type == 'G' %} selected {% endif %}>Barang</option>
+                    <option value="S" {% if catalog.com_type == 'S' %} selected {% endif %}>Jasa</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Category *</label>
+            <div class="col-md-7">
+                <select id="category" class="form-control" onchange="ajaxSelect(this, '{{ site_url('commodity/api/list_group') }}', 'ajax-group', 'Select Group', '{% if catalog.com_group %} {{ com_group(catalog.com_group, false, true) }} {% endif %}')" required>
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                        <option id="category-{{ category.com_group_id }}" value="{{ encrypt(category.com_group_id) }}">{{ category.com_group_code }} - {{ category.com_group_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Group *</label>
+            <div class="col-md-7">
+                <select id="ajax-group" class="form-control" onchange="ajaxSelect(this, '{{ site_url('commodity/api/list_group') }}', 'ajax-material-name', 'Select Material Name', '{% if catalog.com_group %} {{ com_group(catalog.com_group, false, false) }} {% endif %}')" required>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Material Name *</label>
+            <div class="col-md-7">
+                <select id="ajax-material-name" class="form-control" name="material-name" onchange="generateCode('{{ site_url('commodity/api/nextval') }}', this)" required>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Catalog Code *</label>
+            <div class="col-md-7">
+                <div class="col-md-12">
+                    <input class="form-control" type="text" name="catalog-code" id="catalog-code" value="{{ catalog.com_catalog_code }}" required readonly >
+                </div><br>
+                <div class="col-md-9">
+                    <select class="form-control" name="uom" required>
+                        <option value="">Select UoM</option>
+                        {% for unit in uom %}
+                            <option value="{{ unit.adm_uom_id }}" {% if unit.adm_uom_id == catalog.adm_uom %} selected {% endif %}>{{ unit.adm_uom_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Additional Description *</label>
+            <div class="col-md-7">
+                <textarea class="form-control" name="description" rows="4" required>{{ catalog.com_description }}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Manufacture</label>
+            <div class="col-md-7">
+                <input class="form-control" name="manufacture" type="text" value="{{ catalog.com_manufacture }}" >
+            </div>
+        </div>
+        <div class="col-lg-6 goods">
+            <label class="control-label col-md-4">Brand</label>
+            <div class="col-md-7">
+                <input class="form-control" name="brand" type="text" value="{{ catalog.com_brand }}" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group goods">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Part Number</label>
+            <div class="col-md-7">
+                <input class="form-control" name="part-number" type="text" value="{{ catalog.com_part_number }}" >
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Serial Number</label>
+            <div class="col-md-7">
+                <input class="form-control" name="serial-number" type="text" value="{{ catalog.com_serial_number }}" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        {#<div class="col-lg-6">#}
+            {#<label class="control-label col-md-4">Image</label>#}
+            {#<div class="col-md-7">#}
+                {#<div class="fileupload fileupload-new" data-provides="fileupload">#}
+                    {#<div class="fileupload-new img-thumbnail" style="width: 200px; height: 150px;">#}
+                        {#<img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image">#}
+                    {#</div>#}
+                    {#<div class="fileupload-preview fileupload-exists img-thumbnail" style="width: 200px; max-height: 150px;"></div>#}
+                    {#<div>#}
+                        {#<span class="btn btn-default btn-file">#}
+                            {#<span class="fileupload-new">Select Image</span>#}
+                            {#<span class="fileupload-exists">Change</span>#}
+                            {#<input type="file" name="file">#}
+                        {#</span>#}
+                        {#<a class="btn btn-default fileupload-exists" data-dismiss="fileupload" href="#">Remove</a>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Is Asset?</label>
+            <div class="col-md-1">
+                <label class="checkbox">
+                    <input type="checkbox" name="is-asset" {% if catalog.is_asset == 'Y' %} checked {% endif %}><span>&nbsp;</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+        <input class="form-control" type="hidden" name="id" value="{{ catalog.com_catalog_id }}" >
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-catalog', '{{ site_url('commodity/api/catalog') }}')" >Simpan</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+</form>
+
+{# -- the comment -- #}
+<script type="text/javascript">
+    $(document).ready(function () {
+        {% if catalog.com_group %}
+            // load category
+            document.getElementById("category-{{ com_group(catalog.com_group, true) }}").selected=true;
+            $('#category').trigger("change");
+        {% endif %}
+    });
+</script>

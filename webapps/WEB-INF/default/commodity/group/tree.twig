@@ -1,0 +1,73 @@
+{% block css %}
+    {# -- the comment -- #}
+    {{ css('jstree.min.css', 'all', 'css') }}
+    <style>
+        .btn-xxs {
+            padding: 1px;
+            font-size: 9px;
+            line-height: 1.5;
+            border-radius: 3px;
+        }
+        .jstree-anchor {
+            width: 450px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div id="group-tree" class="commodity">
+        <ul>
+            {% set code = "" %}
+            {% for lv1 in list %}
+            <li data-jstree='{ "opened" : false }'>
+                <span>{{ lv1['code'] }} &nbsp;-&nbsp; {{ lv1['name'] }}</span>
+                <span style="float: right; margin-right: -100px;">
+                    <button type="button" class="btn btn-xxs" onclick="groupAdd('{{ lv1['id'] }}', '{{ lv1['name'] }}', '{{ lv1['code'] }}')">&#8195;<i class="fa fa-plus-circle"></i></button>
+                    <button type="button" class="btn btn-xxs" onclick="groupEdit('{{ lv1['id']~'~'~lv1['code']~'~'~lv1['name']~'~'~''~'~'~'' }}')">&#8195;<i class="fa fa-pencil-alt"></i></button>
+                    <button type="button" class="btn btn-xxs" onclick="removeItem('{{ site_url('commodity/group/delete') }}', '{{ encrypt(lv1['id']) }}', '{{ site_url('commodity/group/list') }}')">&#8195;<i class="fa fa-trash"></i></button>
+                </span>
+                {% if lv1['child'] > 0 %}
+                <ul>
+                    {% for lv2 in child(lv1['id']) %}
+                    <li data-jstree='{ "selected" : false }'>
+                        <span>{{ lv2['code'] }} &nbsp;-&nbsp; {{ lv2['name'] }}
+                        </span>
+                        <span style="float: right; margin-right: -100px;">
+                            <button type="button" class="btn btn-xxs" onclick="groupAdd('{{ lv2['id'] }}', '{{ lv2['name'] }}', '{{ lv2['code'] }}')">&#8195;<i class="fa fa-plus-circle"></i></button>
+                            <button type="button" class="btn btn-xxs" onclick="groupEdit('{{ lv2['id']~'~'~explode('.', lv2['code'])[2]~'~'~lv2['name']~'~'~lv2['parent']~'~'~lv1['name']~'~'~explode('.', lv2['code'])[0]~'.'~explode('.', lv2['code'])[1] }}')">&#8195;<i class="fa fa-pencil-alt"></i></button>
+                            <button type="button" class="btn btn-xxs" onclick="removeItem('{{ site_url('commodity/group/delete') }}', '{{ encrypt(lv2['id']) }}', '{{ site_url('commodity/group/list') }}')">&#8195;<i class="fa fa-trash"></i></button>
+                        </span>
+                        {% if lv2['child'] > 0 %}
+                        <ul>
+                            {% for lv3 in child(lv2['id']) %}
+                            <li data-jstree='{"icon":"glyphicon glyphicon-file"}'>
+                                <span>{{ lv3['code'] }} &nbsp;-&nbsp; {{ lv3['name'] }}</span>
+                                <span style="float: right; margin-right: -100px;">
+                                    <button type="button" class="btn btn-xxs" onclick="groupEdit('{{ lv3['id']~'~'~explode('.', lv3['code'])[3]~'~'~lv3['name']~'~'~lv3['parent']~'~'~lv2['name']~'~'~explode('.', lv3['code'])[0]~'.'~explode('.', lv3['code'])[1]~'.'~explode('.', lv3['code'])[2] }}')">&#8195;<i class="fa fa-pencil-alt"></i></button>
+                                    <button type="button" class="btn btn-xxs" onclick="removeItem('{{ site_url('commodity/group/delete') }}', '{{ encrypt(lv3['id']) }}', '{{ site_url('commodity/group/list') }}')">&#8195;<i class="fa fa-trash"></i></button>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('jstree.min.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#group-tree').jstree();
+        });
+    </script>
+{% endblock %}
