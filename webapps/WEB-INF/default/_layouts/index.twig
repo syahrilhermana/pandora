@@ -72,6 +72,17 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="dropdown"><a data-toggle="dropdown" href="#">
+                            <span aria-hidden="true" class="hightop-pages"></span>Master<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{{ site_url('master/role') }}">Role</a>
+                            </li>
+                            <li>
+                                <a href="{{ site_url('master/process') }}">process</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="dropdown"><a data-toggle="dropdown" class="{% if ci.uri.segment(1)|capitalize == "Asset" %} current {% endif %}" href="#">
                             <span aria-hidden="true" class="hightop-feed"></span>Fixed Asset<b class="caret"></b></a>
                         <ul class="dropdown-menu">

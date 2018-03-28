@@ -1,0 +1,17 @@
+<form id="form-role" action="{{ site_url('master/role/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">ADM Role Name</label>
+            <div class="col-md-7">
+                <input class="form-control" name="adm_role_name" type="text" value="{{ role.adm_role_name }}" >
+                <input type="hidden" name="adm_role_id" class="form-control" value="{{ role.adm_role_id }}">
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-role', '{{ site_url('master/api/role') }}')" >Simpan</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

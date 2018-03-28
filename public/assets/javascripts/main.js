@@ -333,6 +333,7 @@ function ajaxSubmit(target, uri) {
         contentType: false,
         success: function (response) {
             $("#default").modal('hide');
+            redrawTable('datatables');
         },
         error: function(response) {
             alert(response.message);
