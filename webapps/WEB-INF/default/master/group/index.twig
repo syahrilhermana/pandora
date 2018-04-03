@@ -1,0 +1,72 @@
+{% extends _layout %}
+
+{% block css %}
+    {# -- the comment -- #}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget-container fluid-height">
+                <div class="heading">
+                    <i class="fa fa-home"></i>Commodity &nbsp;<i class="fa fa-angle-double-right"></i>  Goup &nbsp;<i class="fa fa-angle-double-right"></i>
+                </div>
+
+                <div class="widget-content padded">
+                    <form action="{{ site_url('commodity/group/save') }}" method="post" class="form-horizontal">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Group Parent (Optional)</label>
+                                <input type="text" id="groupParentShow" class="form-control" placeholder="As Parent" disabled >
+                                <input type="hidden" id="groupParent" name="parent" class="form-control" >
+                                <input type="hidden" id="groupId" name="id" class="form-control" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Group Code *</label>
+                                    <div class="col-sm-12">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" id="groupCode"></span>
+                                            <input type="text" id="groupCodeShow" name="code" class="form-control" required >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Group Name *</label>
+                                    <input type="text" id="groupName" name="name" class="form-control" required >
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-6"><input type="submit" class="btn btn-primary form-control" value="Simpan" ></div>
+                                        <div class="col-sm-6"><input type="reset" onclick="$('#groupCode').text(''); $('#groupId').val('')" class="btn btn-default form-control" value="Reset" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <br>
+                    <div id="result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('app/com/commodity.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#result").load("{{ site_url('commodity/group/list') }}");
+        });
+    </script>
+{% endblock %}

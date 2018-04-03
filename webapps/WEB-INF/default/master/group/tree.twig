@@ -1,0 +1,71 @@
+{% block css %}
+    {# -- the comment -- #}
+    {{ css('jquery.treegrid.css', 'all', 'css') }}
+{% endblock %}
+
+{% block content %}
+
+    <table class="tree table border-less">
+        {# Group Category #}
+        {% for lv1 in list %}
+            <tr class="treegrid-{{ lv1['id'] }}">
+                <td>&nbsp;&nbsp;{{ lv1['code'] }} &nbsp;-&nbsp; {{ lv1['name'] }}</td>
+                <td>
+                    <div class="form-group">
+                        <button type="button" class="btn-xs btn-primary" onclick="groupAdd('{{ lv1['id'] }}', '{{ lv1['name'] }}', '{{ lv1['code'] }}')">&nbsp;<i class="fa fa-plus"></i></button>
+                        <button type="button" class="btn-xs btn-primary" onclick="groupEdit('{{ lv1['id']~'~'~lv1['code']~'~'~lv1['name']~'~'~''~'~'~'' }}')">&nbsp;<i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn-xs btn-danger" onclick="removeItem('{{ site_url('commodity/group/delete') }}', '{{ encrypt(lv1['id']) }}', '{{ site_url('commodity/group/list') }}')">&nbsp;<i class="fa fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+
+            {% if lv1['child'] > 0 %}
+                {# Group #}
+                {% for lv2 in child(lv1['id']) %}
+                    <tr class="treegrid-{{ lv2['id'] }} treegrid-parent-{{ lv1['id'] }}">
+                        <td>&nbsp;&nbsp;{{ lv2['code'] }} &nbsp;-&nbsp; {{ lv2['name'] }}</td>
+                        <td>
+                            <div class="form-group">
+                                <button type="button" class="btn-xs btn-primary" onclick="groupAdd('{{ lv2['id'] }}', '{{ lv2['name'] }}', '{{ lv2['code'] }}')">&nbsp;<i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn-xs btn-primary">&nbsp;<i class="fa fa-edit"></i></button>
+                                <button type="button" class="btn-xs btn-danger">&nbsp;<i class="fa fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% if lv2['child'] > 0 %}
+                        {# Material Name #}
+                        {% for lv3 in child(lv2['id']) %}
+                            <tr class="treegrid-{{ lv3['id'] }} treegrid-parent-{{ lv2['id'] }}">
+                                <td>&nbsp;&nbsp;{{ lv3['code'] }} &nbsp;-&nbsp; {{ lv3['name'] }}</td>
+                                <td>
+                                    <div class="form-group">
+                                        <button type="button" class="btn-xs btn-primary" onclick="groupAdd('{{ lv3['id'] }}', '{{ lv3['name'] }}', '{{ lv3['code'] }}')">&nbsp;<i class="fa fa-plus"></i></button>
+                                        <button type="button" class="btn-xs btn-primary">&nbsp;<i class="fa fa-edit"></i></button>
+                                        <button type="button" class="btn-xs btn-danger">&nbsp;<i class="fa fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+            
+        {% endfor %}
+    </table>
+{% endblock %}
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('jquery.treegrid.js', 'js') }}
+    {{ js('jquery.treegrid.bootstrap3.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tree').treegrid({
+                initialState: 'collapsed'
+            });
+        });
+    </script>
+{% endblock %}
