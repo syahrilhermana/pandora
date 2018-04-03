@@ -158,6 +158,33 @@ if ( ! function_exists('material_name'))
 }
 
 /**
+ * Group Name helper
+ * @access  public
+ * @param   mixed
+ * @return  mixed
+ */
+if ( ! function_exists('group_name'))
+{
+    function group_name($code)
+    {
+        $sys =& get_instance();
+        $sys->load->database();
+
+        $query = "select a.com_group_name as material_name, 
+                    b.com_group_name as group_name, 
+                    c.com_group_name as category_name 
+                  from com_group a, com_group b, com_group c
+                  where a.com_group_parent = b.com_group_id
+                  and b.com_group_parent = c.com_group_id
+                  and a.com_group_id = " . $code;
+        $builder = $sys->db->query($query);
+        $result = $builder->row()->group_name;
+
+        return $result;
+    }
+}
+
+/**
  * UoM helper
  * @access  public
  * @param   mixed

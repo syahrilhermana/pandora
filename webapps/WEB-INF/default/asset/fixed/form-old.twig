@@ -1,0 +1,74 @@
+<form id="form-catalog" action="{{ site_url('commodity/catalog/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Asset Code *</label>
+            <div class="col-md-7">
+                <input type="text" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Asset Status *</label>
+            <div class="col-md-7">
+                <select id="category" class="form-control">
+                    <option value="">Select Status</option>
+                    <option value="G">Baik</option>
+                    <option value="B">Rusak</option>
+                    <option value="L">Hilang</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Catalog Code *</label>
+            <div class="col-md-7">
+                <input type="text" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Material Name *</label>
+            <div class="col-md-7">
+                <input type="hidden">
+                <span id="material-name"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Group *</label>
+            <div class="col-md-7">
+                <input type="hidden">
+                <span id="group"></span>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">UoM *</label>
+            <div class="col-md-7">
+                <input type="hidden">
+                <span id="uom"></span>
+            </div>
+        </div>
+    </div>
+
+
+
+    </div>
+    <div class="modal-footer">
+        <input class="form-control" type="hidden" name="id" value="{{ catalog.com_catalog_id }}" >
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-catalog', '{{ site_url('commodity/api/catalog') }}')" >Simpan</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+</form>
+
+{# -- the comment -- #}
+<script type="text/javascript">
+    $(document).ready(function () {
+        {% if catalog.com_group %}
+            // load category
+            document.getElementById("category-{{ com_group(catalog.com_group, true) }}").selected=true;
+            $('#category').trigger("change");
+        {% endif %}
+    });
+</script>

@@ -1,0 +1,32 @@
+{% block css %}
+    {# -- the comment -- #}
+    {{ css('datatables.css', 'all', 'css') }}
+{% endblock %}
+
+    <div class="col-md-12">
+    <table id="datatables" class="table table-bordered table-responsive">
+        <thead>
+        <th width="55px">#</th>
+        <th>Code</th>
+        <th>Description</th>
+        <th width="100px">Action</th>
+        </thead>
+        <tbody></tbody>
+    </table>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('jquery.datatables.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            drawTable('{{ site_url('asset/api/list_catalog') }}');
+        });
+    </script>
+{% endblock %}

@@ -1,13 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class ComCatalog extends CI_Model
+class AssetHeader extends CI_Model
 {
-    var $table = 'com_catalog';
-    var $primary_key = 'com_catalog_id';
-    var $column_order = array(null, 'com_catalog_id', 'com_catalog_code');
-    var $column_search = array('com_catalog_code', 'com_description');
-    var $order = array('com_catalog_id' => 'asc');
+    var $table = 'asset_header';
+    var $primary_key = 'asset_id';
+    var $column_order = array(null, 'asset_id', 'asset_code');
+    var $column_search = array('asset_code', 'material_name');
+    var $order = array('asset_id' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
 
@@ -133,38 +133,6 @@ class ComCatalog extends CI_Model
      * @param int offset
      * @return array object
      */
-    public function get_list_parent($limit = FALSE, $offset = FALSE) {
-        $this->_get_field_query();
-        if ($limit) {
-            return $this->db->where("com_group_parent is null")->limit($limit, $offset)->get()->result();
-        } else {
-            return $this->db->where("com_group_parent is null")->get()->result();
-        }
-    }
-
-    /**
-     * Get a list of data without pagination options
-     *
-     * @param int limit
-     * @param int offset
-     * @return array object
-     */
-    public function get_list_childs($where, $value = FALSE) {
-        if (!$value) {
-            $value = $where;
-            $where = $this->primary_key;
-        }
-        $object = $this->db->where($where, $value)->get($this->table)->result();
-        return $object;
-    }
-
-    /**
-     * Get a list of data with pagination options
-     *
-     * @param int limit
-     * @param int offset
-     * @return array object
-     */
     public function get_list($limit = FALSE, $offset = FALSE) {
         $this->_get_field_query();
         if ($limit) {
@@ -217,13 +185,6 @@ class ComCatalog extends CI_Model
     public function count_all()
     {
         $this->db->from($this->table);
-        return $this->db->count_all_results();
-    }
-
-    public function count_by_criteria($where, $value = FALSE)
-    {
-        $this->db->from($this->table);
-        $this->db->where("com_group_parent is null");
         return $this->db->count_all_results();
     }
 }

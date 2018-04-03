@@ -29,14 +29,15 @@ class Fixed extends CI_Controller
     {
         if($action) {
             switch ($action) {
-                case 'add'  :
-                    $this->get_form();
-                case 'save' :
-                    $this->save();
-                case 'delete' :
-                    return $this->delete();
-                case 'api'  :
-                    'on fire';
+                case 'record'  :
+                    $this->get_record_index();
+                    break;
+                case 'record-form'  :
+                    $this->get_record_form();
+                    break;
+                case 'record-save'  :
+                    $this->post_record_save();
+                    break;
                 default :
                     $this->show_error();
             }
@@ -53,113 +54,56 @@ class Fixed extends CI_Controller
         $this->twiggy->template('error/404')->display();
     }
 
-    private function get_form($id=false)
+    private function get_record_index()
     {
-        $this->twiggy->template($this->module.'form')->display();
+        $this->twiggy->template('asset/fixed/index')->display();
     }
 
-    private function save()
+    private function get_record_form()
+    {
+        $this->twiggy->template('asset/fixed/form')->display();
+    }
+
+    private function post_record_save()
     {
         // load library
         $this->load->library('form_validation', NULL, 'validation');
 
-        $this->validation->set_rules('type', 'required', 'required');
-        $this->validation->set_rules('material-name', 'required', 'required');
+        $this->validation->set_rules('asset-code', 'required', 'required');
+        $this->validation->set_rules('asset-status', 'required', 'required');
         $this->validation->set_rules('catalog-code', 'required', 'required');
-        $this->validation->set_rules('uom', 'required', 'required');
-        $this->validation->set_rules('description', 'required', 'required');
+        $this->validation->set_rules('material-name', 'required', 'required');
+        $this->validation->set_rules('com-group', 'required', 'required');
+        $this->validation->set_rules('adm-uom', 'required', 'required');
+        $this->validation->set_rules('acquisition-cost', 'required', 'required');
+        $this->validation->set_rules('acquisition-date', 'required', 'required');
 
         if($this->validation->run() === true) {
             // load database
             $this->load->database();
-            $this->load->model("ComCatalog", "model");
+            $this->load->model("AssetHeader", "model");
 
             $key = false;
             $data = array(
-                'com_catalog_code' => $this->input->post('catalog-code'),
-                'adm_uom' => $this->input->post('uom'),
-                'com_group' => decrypt($this->input->post('material-name')),
-                'com_type' => $this->input->post('type'),
-                'com_description' => $this->input->post('description'),
-                'com_manufacture' => $this->input->post('manufacture'),
-                'com_brand' => $this->input->post('brand'),
-                'com_part_number' => $this->input->post('part-number'),
-                'com_serial_number' => $this->input->post('serial-number'),
-                'is_asset' => ($this->input->post('is-asset') == 'on') ? 'Y' : 'N'
+                'asset_code' => $this->input->post('asset-code'),
+                'asset_status' => $this->input->post('asset-status'),
+                'catalog_code' => $this->input->post('catalog-code'),
+                'material_name' => $this->input->post('material-name'),
+                'com_group' => $this->input->post('com-group'),
+                'adm_uom' => $this->input->post('adm-uom'),
+                'acquisition_cost' => $this->input->post('acquisition-cost'),
+                'acquisition_date' => date('Y-m-d H:i:s', strtotime($this->input->post('acquisition-date'))),
+                'latitude' => $this->input->post('latitude'),
+                'longitude' => $this->input->post('longitude')
             );
 
-            // upload file
-            $initialize = array(
-                'upload_path'   => './data/catalog/',
-                'allowed_type'  => 'jpg|png'
-            );
-
-            $this->load->library('upload', $initialize);
-
-            if($this->upload->do_upload('file')) {
-                $file = $this->upload->data();
-                $data['com_image'] = $file['file_name'];
-            } else {
-                $this->session->set_flashdata('error', 'file not uploaded');
-                $this->session->keep_flashdata('error');
-
-                redirect('commodity/catalog');
-            }
-
-            $exists = $this->model->exists('com_catalog_code', $this->input->post('catalog-code'));
-            if($exists > 0) {
-                $this->session->set_flashdata('error', 'catalog code already exist');
-                $this->session->keep_flashdata('error');
-
-                redirect('commodity/catalog');
-            }
-
-            if(strlen($this->input->post('id')) > 0) {
-                $key = $this->input->post('id');
+            if(strlen($this->input->post('asset_id')) > 0) {
+                $key = $this->input->post('asset_id');
             }
 
             $this->model->save($data, $key);
         }
 
-        redirect('commodity/catalog');
-    }
-
-    private function delete()
-    {
-        $this->load->library('form_validation', NULL, 'validation');
-        $response = array(
-            'status'  => true,
-            'message' => 'we are superman'
-        );
-
-        $this->validation->set_rules('token', 'Required', 'required');
-
-        if($this->validation->run() === true) {
-            // load database
-            $this->load->database();
-            $this->load->model("ComGroup", "model");
-
-            $key = decrypt($this->input->post('token'));
-            $exists = $this->model->exists($key);
-
-            if($exists == 0) {
-                $response = array(
-                    'status'  => false,
-                    'message' => 'group code not valid'
-                );
-            } else {
-                if($this->model->count_child_by_parent($key) > 0) {
-                    $response = array(
-                        'status'  => false,
-                        'message' => 'constraint error'
-                    );
-                } else {
-                    $this->model->delete($key);
-                }
-            }
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode($response);
+        redirect('asset/fixed');
     }
 }

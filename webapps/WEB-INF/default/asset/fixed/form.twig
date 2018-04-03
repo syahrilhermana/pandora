@@ -1,0 +1,161 @@
+{% extends _layout %}
+
+{% block css %}
+    {# -- the comment -- #}
+    {{ css('select2.css', 'all', 'css') }}
+    {{ css('jquery.fileupload-ui.css', 'all', 'css') }}
+    {{ css('datepicker.css', 'all', 'css') }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="breadcrumb">
+                <li><a href="#"></a><i class="fa fa-home"></i></li>
+                <li>Asset</li>
+                <li class="active">Record Asset</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget-container fluid-height">
+                <div class="heading">
+                    <i class="fa fa-calendar"></i>Record Asset
+                </div>
+
+                <div class="widget-content padded">
+                    <form id="form-catalog" action="{{ site_url('asset/fixed/record-save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Asset Code *</label>
+                                <div class="col-md-7">
+                                    <input type="text" name="asset-code" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Asset Status *</label>
+                                <div class="col-md-7">
+                                    <select id="category" name="asset-status" class="form-control" required>
+                                        <option value="">Select Status</option>
+                                        <option value="G">Baik</option>
+                                        <option value="B">Rusak</option>
+                                        <option value="L">Hilang</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Catalog Code *</label>
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <input class="form-control" id="catalog" name="catalog-code" type="text" required><span class="input-group-btn">
+                                        <button class="btn btn-default" onclick="ajaxLoad('{{ site_url('asset/api/modal/catalog-lookup') }}', 'Cari Catalog')" type="button"><i class="fa fa-search"></i></button></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Material Name *</label>
+                                <div class="col-md-7">
+                                    <input type="hidden" name="material-name" id="material" value="">
+                                    <span id="material-name"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Group *</label>
+                                <div class="col-md-7">
+                                    <input type="hidden" id="group" name="com-group" value="">
+                                    <span id="group-name"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">UoM *</label>
+                                <div class="col-md-7">
+                                    <input type="hidden" id="uom" name="adm-uom" value="">
+                                    <span id="uom-name"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Harga Perolehan *</label>
+                                <div class="col-md-7">
+                                    <input type="text" name="acquisition-cost" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Tanggal Perolehan *</label>
+                                <div class="col-md-7">
+                                    <div class="input-group date datepicker" data-date-autoclose="true" data-date-format="dd-mm-yyyy">
+                                        <input class="form-control" name="acquisition-date" type="text">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Latitude *</label>
+                                <div class="col-md-7">
+                                    <input type="text" name="latitude" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Longitude *</label>
+                                <div class="col-md-7">
+                                    <input type="text" name="longitude" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">&nbsp;</label>
+                            <div class="col-md-7">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                                <button type="reset" class="btn btn-default-outline">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('select2.js', 'js') }}
+    {{ js('bootstrap-datepicker.js', 'js') }}
+    {{ js('bootstrap-fileupload.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // your code here
+            $('.datepicker').datepicker();
+        });
+
+        function setValues(catalog, material, group, groupID, uom, uomID) {
+            $("#catalog").val(catalog);
+            $("#uom").val(uomID);
+            $("#material").val(material);
+            $("#group").val(groupID);
+            var materialName = document.getElementById("material-name");
+            materialName.innerHTML = material;
+            var groupName = document.getElementById("group-name");
+            groupName.innerHTML = group;
+            var oumName = document.getElementById("uom-name");
+            oumName.innerHTML = uom;
+
+            $("#default").modal('hide');
+        }
+    </script>
+{% endblock %}
