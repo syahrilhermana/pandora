@@ -64,7 +64,7 @@ class Api extends REST_Controller
                 if ($exists > 0) {
                     $output = array(
                         'status' => false,
-                        'message' => 'Adm. Process code already exist'
+                        'message' => 'Adm. Process ID already exist'
                     );
                 }
                 if (strlen($this->input->post('adm_process_id')) > 0) {
@@ -156,6 +156,41 @@ class Api extends REST_Controller
 
         $this->set_response($response, REST_Controller::HTTP_OK);
     }
+    /** Default Modal */
+    public function modal_get($param)
+    {
+//        if(!$this->input->is_ajax_request()){
+//            $this->twiggy->template('error/error')->display();
+//            return false;
+//        }
+
+        // load database
+        $this->load->database();
+        $this->load->model("Role", "role");
+        $this->load->model("Process", "process");
+//        $this->load->model("Role", "role");
+
+        $exp = explode('_', $param);
+        $template = 'master/'.$exp[0].'/'.$exp[1];
+
+//        $role = $this->role->get_list();
+//        $process = $this->process->get_list();
+
+
+        if($exp[1] == 'form') {
+            if(isset($_GET['token'])) {
+                $this->twiggy->set('process', $this->process->get($this->input->get('token')));
+            }
+
+        } elseif ($exp[1] == 'view') {
+            $this->twiggy->set('process', $this->process->get($this->input->get('token')));
+        } else {
+            $template = 'error/404';
+        }
+
+        $this->twiggy->template($template)->display();
+    }
+    //---------------------------------------------------------------------------------------------------------------//
     public function role_delete_post()
     {
         $this->load->library('form_validation', NULL, 'validation');
@@ -192,7 +227,6 @@ class Api extends REST_Controller
         $this->set_response($response, REST_Controller::HTTP_OK);
     }
 
-    /** UoM API Service */
     public function list_role_get()
     {
         if(!$this->input->is_ajax_request()){
@@ -277,42 +311,7 @@ class Api extends REST_Controller
     }
 
 
-    /** Default Modal */
-    public function modal_get($param)
-    {
-//        if(!$this->input->is_ajax_request()){
-//            $this->twiggy->template('error/error')->display();
-//            return false;
-//        }
-
-        // load database
-        $this->load->database();
-        $this->load->model("Role", "role");
-        $this->load->model("Process", "process");
-//        $this->load->model("Role", "role");
-
-        $exp = explode('_', $param);
-        $template = 'master/'.$exp[0].'/'.$exp[1];
-
-//        $role = $this->role->get_list();
-//        $process = $this->process->get_list();
-
-
-        if($exp[1] == 'form') {
-            if(isset($_GET['token'])) {
-                $this->twiggy->set('process', $this->process->get($this->input->get('token')));
-            }
-
-        } elseif ($exp[1] == 'view') {
-            $this->twiggy->set('process', $this->process->get($this->input->get('token')));
-        } else {
-            $template = 'error/404';
-        }
-
-        $this->twiggy->template($template)->display();
-    }
-
-    /////// modal ROLE module ///////
+    //modal ROLE //
     public function modal_role_get($param)
     {
 //        if(!$this->input->is_ajax_request()){
@@ -345,8 +344,620 @@ class Api extends REST_Controller
 
         $this->twiggy->template($template)->display();
     }
+//------------------------------------------------------------------------------------------------------------------------------//
+// COMPANY LIST//
+    public function company_post()
+    {
+        // load library
+        $this->load->library('form_validation', NULL, 'validation');
+
+        $this->validation->set_rules('name', 'required', 'required');
+
+        $output = array(
+            'status' => false,
+            'message' => 'Data not valid'
+        );
+
+        if ($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Company", "model");
+
+            $key = false;
+            $data = array(
+                'id_cmp' => $this->input->post('id_cmp'),
+                'name' => $this->input->post('name')
+            );
+
+            $exists = $this->model->exists('id_dpt', $this->input->post('id_cmt'));
+            if ($exists > 0) {
+                $output = array(
+                    'status' => false,
+                    'message' => 'Company ID already exist'
+                );
+            }
+            if (strlen($this->input->post('id_cmp')) > 0) {
+                $key = $this->input->post('id_cmp');
+            }
+            $this->model->save($data, $key);
+        }
+
+        $output = array(
+            'status' => true,
+            'message' => 'success'
+        );
+
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
 
 
+    public function list_company_get()
+    {
+        if(!$this->input->is_ajax_request()){
+            $this->twiggy->template('error/error')->display();
+            return false;
+        }
+
+        $this->load->database();
+        $this->load->model("Company", "model");
+        $length = (!empty($_GET['length'])) ? $_GET['length'] : 10;
+        $start  = (!empty($_GET['start'])) ? $_GET['start'] : 0;
+        $draw   = (!empty($_GET['draw'])) ? $_GET['draw'] : 10;
+        $list = $this->model->get_list($length, $start);
+        $data = array();
+        $no   = $start;
+
+        foreach ($list as $item)
+        {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $item->short_code;
+            $row[] = $item->name;
+            $row[] = '<button class="btn btn-default btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_company/company_view?token=').$item->id_cmp.'\', \'View Company\')" >View</button>
+                    <button class="btn btn-primary btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_company/company_form?token=').$item->id_cmp.'\')" >Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem(\''.site_url('master/api/company_delete').'\', \''.encrypt($item->id_cmp).'\', \'datatables\', true)" >Delete</button>';
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $draw,
+            "recordsTotal" => $this->model->count_all(),
+            "recordsFiltered" => $this->model->count_filtered(),
+            "data" => $data
+        );
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+    public function company_delete_post()
+    {
+        $this->load->library('form_validation', NULL, 'validation');
+        $response = array(
+            'status'  => false,
+            'message' => 'data not valid'
+        );
+
+        $this->validation->set_rules('token', 'Required', 'required');
+
+        if($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Company", "model");
+
+            $key = decrypt($this->input->post('token'));
+            $exists = $this->model->exists($key);
+
+            if($exists == 0) {
+                $response = array(
+                    'status'  => false,
+                    'message' => 'Company ID not valid'
+                );
+            } else {
+                $this->model->delete($key);
+
+                $response = array(
+                    'status'  => true,
+                    'message' => 'delete success'
+                );
+            }
+        }
+
+        $this->set_response($response, REST_Controller::HTTP_OK);
+    }
+    // modal COMPANY module //
+    public function modal_company_get($param)
+    {
+//        if(!$this->input->is_ajax_request()){
+//            $this->twiggy->template('error/error')->display();
+//            return false;
+//        }
+
+        // load database
+        $this->load->database();
+        $this->load->model("Company", "company");
+
+        $exp = explode('_', $param);
+        $template = 'master/'.$exp[0].'/'.$exp[1];
+
+
+        if($exp[1] == 'form') {
+            if(isset($_GET['token'])) {
+                $this->twiggy->set('company', $this->company->get($this->input->get('token')));
+            }
+
+        } elseif ($exp[1] == 'view') {
+            $this->twiggy->set('company', $this->company->get($this->input->get('token')));
+        } else {
+            $template = 'error/404';
+        }
+
+        $this->twiggy->template($template)->display();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------------//
+// USER LIST //
+    public function user_post()
+    {
+        // load library
+        $this->load->library('form_validation', NULL, 'validation');
+
+        $this->validation->set_rules('name', 'required', 'required');
+
+        $output = array(
+            'status' => false,
+            'message' => 'Data not valid'
+        );
+
+        if ($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("User", "model");
+
+            $key = false;
+            $data = array(
+                'id_user' => $this->input->post('id_user'),
+                'username' => $this->input->post('username')
+            );
+
+            $exists = $this->model->exists('id_user', $this->input->post('id_user'));
+            if ($exists > 0) {
+                $output = array(
+                    'status' => false,
+                    'message' => 'User ID already exist'
+                );
+            }
+            if (strlen($this->input->post('id_user')) > 0) {
+                $key = $this->input->post('id_user');
+            }
+            $this->model->save($data, $key);
+        }
+
+        $output = array(
+            'status' => true,
+            'message' => 'success'
+        );
+
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+
+    public function list_user_get()
+    {
+        if(!$this->input->is_ajax_request()){
+            $this->twiggy->template('error/error')->display();
+            return false;
+        }
+
+        $this->load->database();
+        $this->load->model("User", "model");
+        $length = (!empty($_GET['length'])) ? $_GET['length'] : 10;
+        $start  = (!empty($_GET['start'])) ? $_GET['start'] : 0;
+        $draw   = (!empty($_GET['draw'])) ? $_GET['draw'] : 10;
+        $list = $this->model->get_list($length, $start);
+        $data = array();
+        $no   = $start;
+
+        foreach ($list as $item)
+        {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $item->username;
+            $row[] = $item->password;
+            $row[] = $item->name;
+            $row[] = $item->department;
+            $row[] = $item->company;
+            $row[] = '<button class="btn btn-default btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_user/user_view?token=').$item->id_user.'\', \'View User\')" >View</button>
+                    <button class="btn btn-primary btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_user/user_form?token=').$item->id_user.'\')" >Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem(\''.site_url('master/api/user_delete').'\', \''.encrypt($item->id_user).'\', \'datatables\', true)" >Delete</button>';
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $draw,
+            "recordsTotal" => $this->model->count_all(),
+            "recordsFiltered" => $this->model->count_filtered(),
+            "data" => $data
+        );
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+    public function user_delete_post()
+    {
+        $this->load->library('form_validation', NULL, 'validation');
+        $response = array(
+            'status'  => false,
+            'message' => 'data not valid'
+        );
+
+        $this->validation->set_rules('token', 'Required', 'required');
+
+        if($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("User", "model");
+
+            $key = decrypt($this->input->post('token'));
+            $exists = $this->model->exists($key);
+
+            if($exists == 0) {
+                $response = array(
+                    'status'  => false,
+                    'message' => 'User code not valid'
+                );
+            } else {
+                $this->model->delete($key);
+
+                $response = array(
+                    'status'  => true,
+                    'message' => 'delete success'
+                );
+            }
+        }
+
+        $this->set_response($response, REST_Controller::HTTP_OK);
+    }
+    // modal COMPANY module //
+    public function modal_user_get($param)
+    {
+//        if(!$this->input->is_ajax_request()){
+//            $this->twiggy->template('error/error')->display();
+//            return false;
+//        }
+
+        // load database
+        $this->load->database();
+        $this->load->model("User", "user");
+
+        $exp = explode('_', $param);
+        $template = 'master/'.$exp[0].'/'.$exp[1];
+
+
+        if($exp[1] == 'form') {
+            if(isset($_GET['token'])) {
+                $this->twiggy->set('user', $this->company->get($this->input->get('token')));
+            }
+
+        } elseif ($exp[1] == 'view') {
+            $this->twiggy->set('user', $this->company->get($this->input->get('token')));
+        } else {
+            $template = 'error/404';
+        }
+
+        $this->twiggy->template($template)->display();
+    }
+//---------------------------------------------------------------------------------------------------------------------//
+// DEPARTMENT LIST //
+
+    public function department_post()
+    {
+        // load library
+        $this->load->library('form_validation', NULL, 'validation');
+
+        $this->validation->set_rules('name', 'required', 'required');
+
+        $output = array(
+            'status' => false,
+            'message' => 'Data not valid'
+        );
+
+        if ($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Department", "model");
+
+            $key = false;
+            $data = array(
+                'id_dpt' => $this->input->post('id_dpt'),
+                'name' => $this->input->post('name')
+            );
+
+            $exists = $this->model->exists('id_dpt', $this->input->post('id_dpt'));
+            if ($exists > 0) {
+                $output = array(
+                    'status' => false,
+                    'message' => 'Department ID already exist'
+                );
+            }
+            if (strlen($this->input->post('id_dpt')) > 0) {
+                $key = $this->input->post('id_dpt');
+            }
+            $this->model->save($data, $key);
+        }
+
+        $output = array(
+            'status' => true,
+            'message' => 'success'
+        );
+
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+
+    public function list_department_get()
+    {
+        if(!$this->input->is_ajax_request()){
+            $this->twiggy->template('error/error')->display();
+            return false;
+        }
+
+        $this->load->database();
+        $this->load->model("Department", "model");
+        $length = (!empty($_GET['length'])) ? $_GET['length'] : 10;
+        $start  = (!empty($_GET['start'])) ? $_GET['start'] : 0;
+        $draw   = (!empty($_GET['draw'])) ? $_GET['draw'] : 10;
+        $list = $this->model->get_list($length, $start);
+        $data = array();
+        $no   = $start;
+
+        foreach ($list as $item)
+        {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $item->short_code;
+            $row[] = $item->name;
+            $row[] = '<button class="btn btn-default btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_department/department_view?token=').$item->id_dpt.'\', \'View Department\')" >View</button>
+                    <button class="btn btn-primary btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_department/department_form?token=').$item->id_dpt.'\')" >Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem(\''.site_url('master/api/department_delete').'\', \''.encrypt($item->id_dpt).'\', \'datatables\', true)" >Delete</button>';
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $draw,
+            "recordsTotal" => $this->model->count_all(),
+            "recordsFiltered" => $this->model->count_filtered(),
+            "data" => $data
+        );
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+    public function department_delete_post()
+    {
+        $this->load->library('form_validation', NULL, 'validation');
+        $response = array(
+            'status'  => false,
+            'message' => 'data not valid'
+        );
+
+        $this->validation->set_rules('token', 'Required', 'required');
+
+        if($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Department", "model");
+
+            $key = decrypt($this->input->post('token'));
+            $exists = $this->model->exists($key);
+
+            if($exists == 0) {
+                $response = array(
+                    'status'  => false,
+                    'message' => 'Department ID not valid'
+                );
+            } else {
+                $this->model->delete($key);
+
+                $response = array(
+                    'status'  => true,
+                    'message' => 'delete success'
+                );
+            }
+        }
+
+        $this->set_response($response, REST_Controller::HTTP_OK);
+    }
+
+    //modal//
+    public function modal_department_get($param)
+    {
+        //        if(!$this->input->is_ajax_request()){
+        //            $this->twiggy->template('error/error')->display();
+        //            return false;
+        //        }
+
+        // load database
+        $this->load->database();
+        $this->load->model("Department", "department");
+
+        $exp = explode('_', $param);
+        $template = 'master/'.$exp[0].'/'.$exp[1];
+
+
+        if($exp[1] == 'form') {
+            if(isset($_GET['token'])) {
+                $this->twiggy->set('department', $this->company->get($this->input->get('token')));
+            }
+
+        } elseif ($exp[1] == 'view') {
+            $this->twiggy->set('department', $this->company->get($this->input->get('token')));
+        } else {
+            $template = 'error/404';
+        }
+
+        $this->twiggy->template($template)->display();
+    }
+
+
+//---------------------------------------------------------------------------------------------------------------------//
+// ROOM LIST //
+
+    public function room_post()
+    {
+        // load library
+        $this->load->library('form_validation', NULL, 'validation');
+
+        $this->validation->set_rules('name', 'required', 'required');
+
+        $output = array(
+            'status' => false,
+            'message' => 'Data not valid'
+        );
+
+        if ($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Room", "room");
+
+            $key = false;
+            $data = array(
+                'id_room' => $this->input->post('id_room'),
+                'name' => $this->input->post('name'),
+                'short_code' => $this->input->post('short_code'),
+                'department' => $this->input->post('department')
+            );
+
+            $exists = $this->model->exists('id_room', $this->input->post('id_room'));
+            if ($exists > 0) {
+                $output = array(
+                    'status' => false,
+                    'message' => 'Room ID already exist'
+                );
+            }
+            if (strlen($this->input->post('id_room')) > 0) {
+                $key = $this->input->post('id_room');
+            }
+            $this->model->save($data, $key);
+        }
+
+        $output = array(
+            'status' => true,
+            'message' => 'success'
+        );
+
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+
+    public function list_room_get()
+    {
+        if(!$this->input->is_ajax_request()){
+            $this->twiggy->template('error/error')->display();
+            return false;
+        }
+
+        $this->load->database();
+        $this->load->model("Room", "model");
+        $length = (!empty($_GET['length'])) ? $_GET['length'] : 10;
+        $start  = (!empty($_GET['start'])) ? $_GET['start'] : 0;
+        $draw   = (!empty($_GET['draw'])) ? $_GET['draw'] : 10;
+        $list = $this->model->get_list($length, $start);
+        $data = array();
+        $no   = $start;
+
+        foreach ($list as $item)
+        {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $item->name;
+            $row[] = $item->short_code;
+            $row[] = $item->department;
+            $row[] = '<button class="btn btn-default btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_room/room_view?token=').$item->id_room.'\', \'View Room\')" >View</button>
+                    <button class="btn btn-primary btn-sm" onclick="ajaxLoad(\''.site_url('master/api/modal_room/room_form?token=').$item->id_room.'\')" >Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem(\''.site_url('master/api/room_delete').'\', \''.encrypt($item->id_room).'\', \'datatables\', true)" >Delete</button>';
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $draw,
+            "recordsTotal" => $this->model->count_all(),
+            "recordsFiltered" => $this->model->count_filtered(),
+            "data" => $data
+        );
+        $this->set_response($output, REST_Controller::HTTP_OK);
+    }
+
+    public function room_delete_post()
+    {
+        $this->load->library('form_validation', NULL, 'validation');
+        $response = array(
+            'status'  => false,
+            'message' => 'data not valid'
+        );
+
+        $this->validation->set_rules('token', 'Required', 'required');
+
+        if($this->validation->run() === true) {
+            // load database
+            $this->load->database();
+            $this->load->model("Room", "model");
+
+            $key = decrypt($this->input->post('token'));
+            $exists = $this->model->exists($key);
+
+            if($exists == 0) {
+                $response = array(
+                    'status'  => false,
+                    'message' => 'Room ID not valid'
+                );
+            } else {
+                $this->model->delete($key);
+
+                $response = array(
+                    'status'  => true,
+                    'message' => 'delete success'
+                );
+            }
+        }
+
+        $this->set_response($response, REST_Controller::HTTP_OK);
+    }
+
+    //modal//
+    public function modal_room_get($param)
+    {
+        //        if(!$this->input->is_ajax_request()){
+        //            $this->twiggy->template('error/error')->display();
+        //            return false;
+        //        }
+
+        // load database
+        $this->load->database();
+        $this->load->model("Room", "room");
+
+        $exp = explode('_', $param);
+        $template = 'master/'.$exp[0].'/'.$exp[1];
+
+
+        if($exp[1] == 'form') {
+            if(isset($_GET['token'])) {
+                $this->twiggy->set('room', $this->company->get($this->input->get('token')));
+            }
+
+        } elseif ($exp[1] == 'view') {
+            $this->twiggy->set('room', $this->company->get($this->input->get('token')));
+        } else {
+            $template = 'error/404';
+        }
+
+        $this->twiggy->template($template)->display();
+    }
+//-----------------------------------------------------------------------------------------------------------------------//
     /** Sample JWT encode & decode */
     public function index_get()
     {
