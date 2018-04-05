@@ -1,0 +1,17 @@
+<form id="form-process" action="{{ site_url('master/process/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">ADM Process Name</label>
+            <div class="col-md-7">
+                <input class="form-control" name="adm_process_name" type="text" value="{{ process.adm_process_name }}" >
+                <input type="hidden" name="adm_process_id" class="form-control" value="{{ process.adm_process_id }}">
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-process', '{{ site_url('master/api/process') }}')" >Simpan</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+</form>
