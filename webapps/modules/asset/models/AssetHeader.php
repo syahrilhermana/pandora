@@ -175,7 +175,7 @@ class AssetHeader extends CI_Model
         return $this->db->where($where, $value)->count_all_results($this->table);
     }
 
-    function count_filtered()
+    public function count_filtered()
     {
         $this->_get_field_query();
         $query = $this->db->get();
@@ -186,5 +186,15 @@ class AssetHeader extends CI_Model
     {
         $this->db->from($this->table);
         return $this->db->count_all_results();
+    }
+
+    public function currentval()
+    {
+        $sql = "SELECT SUBSTRING(asset_code, 15, 4) as currentval FROM asset_header ORDER BY asset_id DESC LIMIT 1";
+
+        $builder = $this->db->query($sql);
+        $result = (isset($builder->row()->currentval)) ? $builder->row()->currentval : 0;
+
+        return $result;
     }
 }

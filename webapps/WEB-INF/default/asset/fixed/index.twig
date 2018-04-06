@@ -31,8 +31,13 @@
                         <table id="datatables" class="table table-bordered table-responsive">
                             <thead>
                             <th width="55px">#</th>
-                            <th>Code</th>
-                            <th>Description</th>
+                            <th width="150px;">Asset Code</th>
+                            <th width="250px;">Barcode</th>
+                            <th>Material Name</th>
+                            <th>Company</th>
+                            <th>Department</th>
+                            <th>Ruangan</th>
+                            <th>Pemegang</th>
                             <th width="100px">Action</th>
                             </thead>
                             <tbody></tbody>
@@ -53,7 +58,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            {#drawTable('{{ site_url('commodity/api/list_catalog') }}');#}
+            drawTable('{{ site_url('asset/api/list_asset') }}');
         });
     </script>
 {% endblock %}

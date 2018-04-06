@@ -29,9 +29,9 @@
                     <form id="form-catalog" action="{{ site_url('asset/fixed/record-save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
                         <div class="form-group">
                             <div class="col-lg-6">
-                                <label class="control-label col-md-4">Asset Code *</label>
+                                <label class="control-label col-md-4">Asset Code</label>
                                 <div class="col-md-7">
-                                    <input type="text" name="asset-code" class="form-control" required>
+                                    <input type="text" name="asset-code" class="form-control" value="Auto Generate" disabled>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -60,7 +60,7 @@
                             <div class="col-lg-6">
                                 <label class="control-label col-md-4">Material Name *</label>
                                 <div class="col-md-7">
-                                    <input type="hidden" name="material-name" id="material" value="">
+                                    <input type="hidden" name="material-name" id="material" value="" required>
                                     <span id="material-name"></span>
                                 </div>
                             </div>
@@ -70,14 +70,14 @@
                             <div class="col-lg-6">
                                 <label class="control-label col-md-4">Group *</label>
                                 <div class="col-md-7">
-                                    <input type="hidden" id="group" name="com-group" value="">
+                                    <input type="hidden" id="group" name="com-group" value="" required>
                                     <span id="group-name"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <label class="control-label col-md-4">UoM *</label>
                                 <div class="col-md-7">
-                                    <input type="hidden" id="uom" name="adm-uom" value="">
+                                    <input type="hidden" id="uom" name="adm-uom" value="" required>
                                     <span id="uom-name"></span>
                                 </div>
                             </div>
@@ -87,14 +87,14 @@
                             <div class="col-lg-6">
                                 <label class="control-label col-md-4">Harga Perolehan *</label>
                                 <div class="col-md-7">
-                                    <input type="text" name="acquisition-cost" class="form-control">
+                                    <input type="text" name="acquisition-cost" class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <label class="control-label col-md-4">Tanggal Perolehan *</label>
                                 <div class="col-md-7">
                                     <div class="input-group date datepicker" data-date-autoclose="true" data-date-format="dd-mm-yyyy">
-                                        <input class="form-control" name="acquisition-date" type="text">
+                                        <input class="form-control" name="acquisition-date" type="text" required>
                                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
@@ -103,16 +103,32 @@
 
                         <div class="form-group">
                             <div class="col-lg-6">
-                                <label class="control-label col-md-4">Latitude *</label>
+                                <label class="control-label col-md-4">Latitude</label>
                                 <div class="col-md-7">
                                     <input type="text" name="latitude" class="form-control">
                                 </div>
                             </div>
                             <div class="col-lg-6">
-                                <label class="control-label col-md-4">Longitude *</label>
+                                <label class="control-label col-md-4">Longitude</label>
                                 <div class="col-md-7">
                                     <input type="text" name="longitude" class="form-control">
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-6">
+                                <label class="control-label col-md-4">Bulk Insert
+                                    <a class="popover-trigger" data-content="Dapat diisi sesuai dengan jumlah asset dan kosongkan jika hanya mencatat satu asset. Pastikan asset untuk jenis yang sama." data-placement="top" data-toggle="popover" style="width:100%">
+                                        <i class="fa fa-question-circle"></i>
+                                    </a>
+                                </label>
+                                <div class="col-md-2">
+                                    <input type="text" name="bulk" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                &nbsp;
                             </div>
                         </div>
 
