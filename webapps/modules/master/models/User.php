@@ -5,9 +5,11 @@ class User extends CI_Model
 {
     var $table = 'user';
     var $primary_key = 'id_user';
-    var $column_order = array(null,'username','password','name','department','company',null);
-    var $column_search = array('id_user,username,password,name,department,company');
-    var $order = array('id_user' => 'asc');
+    var $primary_key2 = 'user.id_user';
+    var $column_order = array(null,'user.username','user.password','user.name','department.name','company.name',null);
+    var $column_search = array('user.id_user,user.username,user.password,user.name,department.name,company.name');
+    var $columnfield = 'user.id_user,user.username,user.password,user.name,department.name AS department,company.name AS company';
+    var $order = array('user.id_user' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
 
@@ -16,7 +18,10 @@ class User extends CI_Model
      */
     private function _get_field_query()
     {
-        $this->db->from($this->table);
+        $this->db->select($this->columnfield)
+                 ->from($this->table)
+                 ->join('department','department.id_dpt=user.department','LEFT')
+                 ->join('company','company.id_cmp=user.company');
         $i = 0;
         foreach ($this->column_search as $item)
         {
@@ -104,9 +109,14 @@ class User extends CI_Model
     public function get($where, $value = FALSE) {
         if (!$value) {
             $value = $where;
-            $where = $this->primary_key;
+            $where = $this->primary_key2;
         }
-        $object = $this->db->where($where, $value)->get($this->table)->row();
+        $select_field = "*";
+        $this->db->select($select_field)->from($this->table)
+            ->join('department','department.id_dpt=user.department','LEFT')
+            ->join('company','company.id_cmp=user.company')
+            ->where($where, $value);
+        $object = $this->db->get()->row();
         return $object;
     }
 
