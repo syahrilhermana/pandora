@@ -8,7 +8,7 @@ class User extends CI_Model
     var $primary_key2 = 'user.id_user';
     var $column_order = array(null,'user.username','user.password','user.name','department.name','company.name',null);
     var $column_search = array('user.id_user,user.username,user.password,user.name,department.name,company.name');
-    var $columnfield = 'user.id_user,user.username,user.password,user.name,department.name AS department,company.name AS company';
+    var $select_field = 'user.id_user,user.username,user.password,user.name,department.name AS department,company.name AS company';
     var $order = array('user.id_user' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
@@ -18,10 +18,10 @@ class User extends CI_Model
      */
     private function _get_field_query()
     {
-        $this->db->select($this->columnfield)
+        $this->db->select($this->select_field)
                  ->from($this->table)
                  ->join('department','department.id_dpt=user.department','LEFT')
-                 ->join('company','company.id_cmp=user.company');
+                 ->join('company','company.id_cmp=user.company','LEFT');
         $i = 0;
         foreach ($this->column_search as $item)
         {
@@ -62,7 +62,9 @@ class User extends CI_Model
         if(!$id)
         {
             $this->db->insert($this->table, $object);
-            return $this->db->insert_id();
+            $savedata = $this->db->insert_id();
+            log_message('DEBUG','LIHAT DATA SAVE USER EMPTY : ' . $savedata);
+            return $savedata;
         } else {
             $this->db->where($this->primary_key, $id)->update($this->table, $object);
             return $id;
@@ -109,14 +111,9 @@ class User extends CI_Model
     public function get($where, $value = FALSE) {
         if (!$value) {
             $value = $where;
-            $where = $this->primary_key2;
+            $where = $this->primary_key;
         }
-        $select_field = "*";
-        $this->db->select($select_field)->from($this->table)
-            ->join('department','department.id_dpt=user.department','LEFT')
-            ->join('company','company.id_cmp=user.company')
-            ->where($where, $value);
-        $object = $this->db->get()->row();
+        $object = $this->db->where($where, $value)->get($this->table)->row();
         return $object;
     }
 

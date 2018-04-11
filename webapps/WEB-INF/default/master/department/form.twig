@@ -1,17 +1,25 @@
-<form id="form-process" action="{{ site_url('master/process/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+<form id="form-department" action="{{ site_url('master/department/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
     <div class="form-group">
         <div class="col-lg-6">
-            <label class="control-label col-md-4">ADM Process Name</label>
+            <label class="control-label col-md-4">Short Code</label>
             <div class="col-md-7">
-                <input class="form-control" name="adm_process_name" type="text" value="{{ process.adm_process_name }}" >
-                <input type="hidden" name="adm_process_id" class="form-control" value="{{ process.adm_process_id }}">
+                <input class="form-control" name="short_code" type="text" value="{{ department.short_code }}" >
+                <input type="hidden" name="id_dpt" class="form-control" value="{{ department.id_dpt }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Department Name</label>
+            <div class="col-md-7">
+                <input class="form-control" name="name" type="text" value="{{ department.name }}" >
             </div>
         </div>
     </div>
 
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-process', '{{ site_url('master/api/process') }}')" >Simpan</button>
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-department', '{{ site_url('master/api/department') }}')" >Simpan</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
     </div>
 </form>

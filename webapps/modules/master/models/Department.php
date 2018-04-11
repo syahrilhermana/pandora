@@ -5,8 +5,8 @@ class Department extends CI_Model
 {
     var $table = 'department';
     var $primary_key = 'id_dpt';
-    var $column_order = array(null,'short_name','name',null);
-    var $column_search = array('id_dpt, short_name, name');
+    var $column_order = array(null,'short_code','name',null);
+    var $column_search = array('id_dpt, short_code, name');
     var $order = array('id_dpt' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
@@ -170,7 +170,12 @@ class Department extends CI_Model
         if ($limit) {
             return $this->db->limit($limit, $offset)->get()->result();
         } else {
-            return $this->db->get()->result();
+
+            $dataa = $this->db->get()->result();
+            log_message('DEBUG','LIHAT DATA DEPT LIST : ' . $this->db->last_query());
+
+            return $dataa;
+
         }
     }
 

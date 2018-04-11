@@ -293,7 +293,7 @@ class Api extends REST_Controller
             if ($exists > 0) {
                 $output = array(
                     'status' => false,
-                    'message' => 'Adm. Process code already exist'
+                    'message' => 'Role ID already exist'
                 );
             }
             if (strlen($this->input->post('adm_role_id')) > 0) {
@@ -326,9 +326,6 @@ class Api extends REST_Controller
 
         $exp = explode('_', $param);
         $template = 'master/'.$exp[0].'/'.$exp[1];
-
-//        $role = $this->role->get_list();
-//        $process = $this->process->get_list();
 
 
         if($exp[1] == 'form') {
@@ -366,10 +363,11 @@ class Api extends REST_Controller
             $key = false;
             $data = array(
                 'id_cmp' => $this->input->post('id_cmp'),
+                'short_code' => $this->input->post('short_code'),
                 'name' => $this->input->post('name')
             );
 
-            $exists = $this->model->exists('id_dpt', $this->input->post('id_cmt'));
+            $exists = $this->model->exists('id_cmp', $this->input->post('id_cmp'));
             if ($exists > 0) {
                 $output = array(
                     'status' => false,
@@ -516,8 +514,11 @@ class Api extends REST_Controller
 
             $key = false;
             $data = array(
-                'id_user' => $this->input->post('id_user'),
-                'username' => $this->input->post('username')
+                'username' => $this->input->post('username'),
+                'password' => $this->input->post('password'),
+                'name' => $this->input->post('name'),
+                'department' => $this->input->post('department'),
+                'company' => $this->input->post('company')
             );
 
             $exists = $this->model->exists('id_user', $this->input->post('id_user'));
@@ -630,18 +631,22 @@ class Api extends REST_Controller
         // load database
         $this->load->database();
         $this->load->model("User", "user");
+        $this->load->model("Company", "comp");
+        $this->load->model("Department", "dept");
 
         $exp = explode('_', $param);
         $template = 'master/'.$exp[0].'/'.$exp[1];
-
+        $dept = $this->dept->get_list();
+        $comp = $this->comp->get_list();
 
         if($exp[1] == 'form') {
             if(isset($_GET['token'])) {
-                $this->twiggy->set('user', $this->company->get($this->input->get('token')));
+                $this->twiggy->set('user', $this->user->get($this->input->get('token')));
             }
-
+            $this->twiggy->set('comp',$comp);
+            $this->twiggy->set('dept',$dept);
         } elseif ($exp[1] == 'view') {
-            $this->twiggy->set('user', $this->company->get($this->input->get('token')));
+            $this->twiggy->set('user', $this->user->get($this->input->get('token')));
         } else {
             $template = 'error/404';
         }
@@ -671,6 +676,7 @@ class Api extends REST_Controller
             $key = false;
             $data = array(
                 'id_dpt' => $this->input->post('id_dpt'),
+                'short_code' => $this->input->post('short_code'),
                 'name' => $this->input->post('name')
             );
 
@@ -789,11 +795,11 @@ class Api extends REST_Controller
 
         if($exp[1] == 'form') {
             if(isset($_GET['token'])) {
-                $this->twiggy->set('department', $this->company->get($this->input->get('token')));
+                $this->twiggy->set('department', $this->department->get($this->input->get('token')));
             }
 
         } elseif ($exp[1] == 'view') {
-            $this->twiggy->set('department', $this->company->get($this->input->get('token')));
+            $this->twiggy->set('department', $this->department->get($this->input->get('token')));
         } else {
             $template = 'error/404';
         }
@@ -820,7 +826,7 @@ class Api extends REST_Controller
         if ($this->validation->run() === true) {
             // load database
             $this->load->database();
-            $this->load->model("Room", "room");
+            $this->load->model("Room", "model");
 
             $key = false;
             $data = array(
@@ -931,26 +937,33 @@ class Api extends REST_Controller
     //modal//
     public function modal_room_get($param)
     {
-        //        if(!$this->input->is_ajax_request()){
-        //            $this->twiggy->template('error/error')->display();
-        //            return false;
-        //        }
+                if(!$this->input->is_ajax_request()){
+                    $this->twiggy->template('error/error')->display();
+                    return false;
+                }
 
         // load database
         $this->load->database();
         $this->load->model("Room", "room");
+        $this->load->model("Department", "dept");
+
 
         $exp = explode('_', $param);
         $template = 'master/'.$exp[0].'/'.$exp[1];
-
+        $dept = $this->dept->get_list();
 
         if($exp[1] == 'form') {
             if(isset($_GET['token'])) {
-                $this->twiggy->set('room', $this->company->get($this->input->get('token')));
+                $this->twiggy->set('room', $this->room->get($this->input->get('token')));
             }
+            $this->twiggy->set('dept', $dept);
 
         } elseif ($exp[1] == 'view') {
-            $this->twiggy->set('room', $this->company->get($this->input->get('token')));
+            if(isset($_GET['token'])) {
+            $this->twiggy->set('room', $this->room->get($this->input->get('token')));
+            }
+            $this->twiggy->set('dept', $dept);
+
         } else {
             $template = 'error/404';
         }

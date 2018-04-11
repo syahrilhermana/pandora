@@ -5,9 +5,11 @@ class Room extends CI_Model
 {
     var $table = 'room';
     var $primary_key = 'id_room';
-    var $column_order = array(null,'name','short_name','department',null);
-    var $column_search = array('id_room, name,short_name,department');
-    var $order = array('id_room' => 'asc');
+    var $primary_key2 = 'room.id_room';
+    var $column_order = array(null,'room.id_room','room.short_code','room.name','department.name', null);
+    var $column_search = array('short_code','name','department');
+    var $select_field = 'room.id_room AS id_room,room.short_code AS short_code,room.name AS name,department.name AS department';
+    var $order = array('room.id_room' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
 
@@ -16,7 +18,9 @@ class Room extends CI_Model
      */
     private function _get_field_query()
     {
-        $this->db->from($this->table);
+        $this->db->select($this->select_field)
+                 ->from($this->table)
+                 ->join('department','room.department=department.id_dpt','LEFT');
         $i = 0;
         foreach ($this->column_search as $item)
         {
@@ -57,13 +61,29 @@ class Room extends CI_Model
         if(!$id)
         {
             $this->db->insert($this->table, $object);
-            return $this->db->insert_id();
+            $savedata = $this->db->insert_id();
+            log_message('DEBUG','LIHAT DATA SAVE ROOM EMPTY : ' . $savedata);
+            return $savedata;
         } else {
             $this->db->where($this->primary_key, $id)->update($this->table, $object);
             return $id;
         }
     }
-
+//    public function save($object, $id = FALSE) {
+//        if(!$id)
+//        {
+//            $this->db->insert($this->table, $object);
+//            if($this->db->affected_rows() > 0)
+//                return 1;
+//            else
+//                return 0;
+//        } else {
+//            $this->db->where($this->primary_key, $id)->update($this->table, $object);
+//
+//            return 1;
+//
+//        }
+//    }
     /**
      * Delete permanent data
      *
@@ -101,6 +121,20 @@ class Room extends CI_Model
      * @param int value
      * @param string identification field
      */
+//    public function get($where, $value = FALSE) {
+//        if (!$value) {
+//            $value = $where;
+//            $where = $this->primary_key;
+//        }
+//        $select_field = "*";
+//        $this->db->select($select_field)->from($this->table)
+////            ->join('department','room.department=department.id_dpt','LEFT')
+//            ->where($where, $value);
+//        $object = $this->db->get()->row();
+////        $this->db->select($this->select_field);
+////        $object = $this->db->where($where, $value)->get($this->table)->row();
+//        return $object;
+//    }
     public function get($where, $value = FALSE) {
         if (!$value) {
             $value = $where;
@@ -109,7 +143,6 @@ class Room extends CI_Model
         $object = $this->db->where($where, $value)->get($this->table)->row();
         return $object;
     }
-
     /**
      * Get a list of data with pagination options
      *
@@ -186,7 +219,8 @@ class Room extends CI_Model
             $value = $where;
             $where = $this->primary_key;
         }
-        return $this->db->where($where, $value)->count_all_results($this->table);
+         $fafa = $this->db->where($where, $value)->count_all_results($this->table);
+        return $fafa;
     }
 
     /**
@@ -220,20 +254,20 @@ class Room extends CI_Model
         return $this->db->count_all_results();
     }
 
-    public function count_all_parent()
-    {
-        $this->db->from($this->table);
-        $this->db->where("com_group_parent is null");
-        return $this->db->count_all_results();
-    }
-
-    public function is_parent($where, $value = FALSE) {
-        if (!$value) {
-            $value = $where;
-            $where = $this->primary_key;
-        }
-        return $this->db->where($where, $value)->count_all_results($this->table);
-    }
+//    public function count_all_parent()
+//    {
+//        $this->db->from($this->table);
+//        $this->db->where("com_group_parent is null");
+//        return $this->db->count_all_results();
+//    }
+//
+//    public function is_parent($where, $value = FALSE) {
+//        if (!$value) {
+//            $value = $where;
+//            $where = $this->primary_key;
+//        }
+//        return $this->db->where($where, $value)->count_all_results($this->table);
+//    }
 
     public function count_child_by_parent($parent)
     {

@@ -1,9 +1,9 @@
 <form id="form-company" action="{{ site_url('master/company/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
     <div class="form-group">
         <div class="col-lg-6">
-            <label class="control-label col-md-4">Company Name</label>
+            <label class="control-label col-md-4">Short Code</label>
             <div class="col-md-7">
-                <input class="form-control" name="name" type="text" value="{{ company.name }}" >
+                <input class="form-control" name="short_code" type="text" value="{{ company.short_code }}" >
                 <input type="hidden" name="id_cmp" class="form-control" value="{{ company.id_cmp }}">
             </div>
         </div>
@@ -11,9 +11,9 @@
 
     <div class="form-group">
         <div class="col-lg-6">
-            <label class="control-label col-md-4">Short Code</label>
+            <label class="control-label col-md-4">Company Name</label>
             <div class="col-md-7">
-                <input class="form-control" name="short_code" type="text" value="{{ company.short_code }}" >
+                <input class="form-control" name="name" type="text" value="{{ company.name }}" >
             </div>
         </div>
     </div>

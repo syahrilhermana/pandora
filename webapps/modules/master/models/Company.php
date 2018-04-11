@@ -170,8 +170,10 @@ class Company extends CI_Model
         if ($limit) {
             return $this->db->limit($limit, $offset)->get()->result();
         } else {
-            return $this->db->get()->result();
-        }
+            $dataa = $this->db->get()->result();
+            log_message('DEBUG','LIHAT DATA user LIST : ' . $this->db->last_query());
+
+            return $dataa;        }
     }
 
     /**

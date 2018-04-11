@@ -1,17 +1,39 @@
-<form id="form-process" action="{{ site_url('master/process/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+<form id="form-room" action="{{ site_url('master/room/save') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
     <div class="form-group">
         <div class="col-lg-6">
-            <label class="control-label col-md-4">ADM Process Name</label>
+            <label class="control-label col-md-4">Name</label>
             <div class="col-md-7">
-                <input class="form-control" name="adm_process_name" type="text" value="{{ process.adm_process_name }}" >
-                <input type="hidden" name="adm_process_id" class="form-control" value="{{ process.adm_process_id }}">
+                <input class="form-control" name="name" type="text" value="{{ room.name }}" >
+                <input type="hidden" name="id_room" class="form-control" value="{{ room.id_room }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Short Code</label>
+            <div class="col-md-7">
+                <input class="form-control" name="short_code" type="text" value="{{ room.short_code }}" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-6">
+            <label class="control-label col-md-4">Department</label>
+            <div class="col-md-7">
+                <select class="form-control" name="department" required>
+                    <option value=""> -- select department --
+                        {% for departement in dept %}
+                        <option value="{{ departement.id_dpt }}" {% if departement.id_dpt == room.department %} selected{% endif %}>{{ departement.name }}</option>
+                        {% endfor %}
+                    </option>
+                </select>
             </div>
         </div>
     </div>
 
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-process', '{{ site_url('master/api/process') }}')" >Simpan</button>
+        <button type="button" class="btn btn-primary" onclick="ajaxSubmit('form-room', '{{ site_url('master/api/room') }}')" >Simpan</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
     </div>
 </form>
