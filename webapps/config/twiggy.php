@@ -194,7 +194,7 @@ $config['twiggy']['register_functions'] = array
 (
     'base_url','current_url','lang','get_config','anchor',
     'css','img','js','print_r', 'child', 'encrypt', 'material_name',
-    'UoM', 'com_group', 'explode'
+    'UoM', 'com_group', 'explode','DepT','ComP'
 );
 
 

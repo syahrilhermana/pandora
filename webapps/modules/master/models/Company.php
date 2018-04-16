@@ -5,8 +5,8 @@ class Company extends CI_Model
 {
     var $table = 'company';
     var $primary_key = 'id_cmp';
-    var $column_order = array(null,'short_name','name',null);
-    var $column_search = array('id_cmp, name');
+    var $column_order = array(null,'short_code','name',null);
+    var $column_search = array('short_code', 'name');
     var $order = array('id_cmp' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
@@ -20,16 +20,16 @@ class Company extends CI_Model
         $i = 0;
         foreach ($this->column_search as $item)
         {
-            if(!empty($_POST['search']['value']))
+            if(!empty($_GET['search']['value']))
             {
                 if($i===0)
                 {
                     $this->db->group_start();
-                    $this->db->like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 else
                 {
-                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 if(count($this->column_search) - 1 == $i)
                     $this->db->group_end();
@@ -38,7 +38,7 @@ class Company extends CI_Model
         }
         if(isset($_POST['order']))
         {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $this->db->order_by($this->column_order[$_GET['order']['0']['column']], $_GET['order']['0']['dir']);
         }
         else if(isset($this->order))
         {

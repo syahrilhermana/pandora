@@ -7,7 +7,7 @@ class Room extends CI_Model
     var $primary_key = 'id_room';
     var $primary_key2 = 'room.id_room';
     var $column_order = array(null,'room.id_room','room.short_code','room.name','department.name', null);
-    var $column_search = array('short_code','name','department');
+    var $column_search = array('room.short_code','room.name');
     var $select_field = 'room.id_room AS id_room,room.short_code AS short_code,room.name AS name,department.name AS department';
     var $order = array('room.id_room' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
@@ -20,29 +20,29 @@ class Room extends CI_Model
     {
         $this->db->select($this->select_field)
                  ->from($this->table)
-                 ->join('department','room.department=department.id_dpt','LEFT');
+                 ->join('department','room.department=department.id_dpt','left');
         $i = 0;
         foreach ($this->column_search as $item)
         {
-            if(!empty($_POST['search']['value']))
+            if(!empty($_GET['search']['value']))
             {
                 if($i===0)
                 {
                     $this->db->group_start();
-                    $this->db->like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 else
                 {
-                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 if(count($this->column_search) - 1 == $i)
                     $this->db->group_end();
             }
             $i++;
         }
-        if(isset($_POST['order']))
+        if(isset($_GET['order']))
         {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $this->db->order_by($this->column_order[$_GET['order']['0']['column']], $_GET['order']['0']['dir']);
         }
         else if(isset($this->order))
         {
@@ -169,7 +169,8 @@ class Room extends CI_Model
     public function get_list_parent($limit = FALSE, $offset = FALSE) {
         $this->_get_field_query();
         if ($limit) {
-            return $this->db->where("Room ID is null")->limit($limit, $offset)->get()->result();
+            $rtrn = $this->db->where("Room ID is null")->limit($limit, $offset)->get()->result();
+            return $rtrn;
         } else {
             return $this->db->where("com_group_parent is null")->get()->result();
         }
@@ -219,8 +220,8 @@ class Room extends CI_Model
             $value = $where;
             $where = $this->primary_key;
         }
-         $fafa = $this->db->where($where, $value)->count_all_results($this->table);
-        return $fafa;
+         $object = $this->db->where($where, $value)->count_all_results($this->table);
+        return $object;
     }
 
     /**

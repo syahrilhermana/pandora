@@ -6,7 +6,7 @@ class Role extends CI_Model
     var $table = 'adm_role';
     var $primary_key = 'adm_role_id';
     var $column_order = array(null,'adm_role_name',null);
-    var $column_search = array('adm_role_id, adm_role_name');
+    var $column_search = array('adm_role_id', 'adm_role_name');
     var $order = array('adm_role_id' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
 
@@ -20,25 +20,25 @@ class Role extends CI_Model
         $i = 0;
         foreach ($this->column_search as $item)
         {
-            if(!empty($_POST['search']['value']))
+            if(!empty($_GET['search']['value']))
             {
                 if($i===0)
                 {
                     $this->db->group_start();
-                    $this->db->like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 else
                 {
-                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 if(count($this->column_search) - 1 == $i)
                     $this->db->group_end();
             }
             $i++;
         }
-        if(isset($_POST['order']))
+        if(isset($_GET['order']))
         {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $this->db->order_by($this->column_order[$_GET['order']['0']['column']], $_GET['order']['0']['dir']);
         }
         else if(isset($this->order))
         {

@@ -7,7 +7,7 @@ class User extends CI_Model
     var $primary_key = 'id_user';
     var $primary_key2 = 'user.id_user';
     var $column_order = array(null,'user.username','user.password','user.name','department.name','company.name',null);
-    var $column_search = array('user.id_user,user.username,user.password,user.name,department.name,company.name');
+    var $column_search = array('user.username','user.password','user.name','department.name','company.name');
     var $select_field = 'user.id_user,user.username,user.password,user.name,department.name AS department,company.name AS company';
     var $order = array('user.id_user' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
@@ -25,25 +25,25 @@ class User extends CI_Model
         $i = 0;
         foreach ($this->column_search as $item)
         {
-            if(!empty($_POST['search']['value']))
+            if(!empty($_GET['search']['value']))
             {
                 if($i===0)
                 {
                     $this->db->group_start();
-                    $this->db->like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 else
                 {
-                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_POST['search']['value']) );
+                    $this->db->or_like('LOWER(' . $item . ')',strtolower($_GET['search']['value']) );
                 }
                 if(count($this->column_search) - 1 == $i)
                     $this->db->group_end();
             }
             $i++;
         }
-        if(isset($_POST['order']))
+        if(isset($_GET['order']))
         {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $this->db->order_by($this->column_order[$_GET['order']['0']['column']], $_GET['order']['0']['dir']);
         }
         else if(isset($this->order))
         {

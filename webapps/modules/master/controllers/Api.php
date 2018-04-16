@@ -30,9 +30,13 @@ class Api extends REST_Controller
         $key = decrypt($this->input->get('token'));
         $object = $this->model->get($key);
 
-        if(isset($object->adm_process_id)) {
-            $newcode = $object->adm_process_id;
+        if(isset($object->com_group_code)) {
+            $newcode = $object->com_group_code;
         }
+
+        $newcode .= '.'.nextval('com_catalog', 'com_group', $key);
+        $output['newcode'] = $newcode;
+
 
         $this->set_response($output, REST_Controller::HTTP_OK);
     }
@@ -711,6 +715,7 @@ class Api extends REST_Controller
 
         $this->load->database();
         $this->load->model("Department", "model");
+
         $length = (!empty($_GET['length'])) ? $_GET['length'] : 10;
         $start  = (!empty($_GET['start'])) ? $_GET['start'] : 0;
         $draw   = (!empty($_GET['draw'])) ? $_GET['draw'] : 10;

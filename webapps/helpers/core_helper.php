@@ -207,6 +207,36 @@ if ( ! function_exists('UoM'))
     }
 }
 
+if ( ! function_exists('DepT')){
+    function DepT($code)
+    {
+     $sys =& get_instance();
+     $sys->load->database();
+
+     $query = "select short_code as short_code, name as name
+               from department
+               where id_dpt =".$code;
+     $builder = $sys->db->query($query);
+     $result = $builder->row()->short_code;
+     return $result;
+    }
+}
+if ( ! function_exists('ComP'))
+{
+    function ComP($code)
+    {
+        $sys =& get_instance();
+        $sys->load->database();
+
+        $query = "select short_code as short_code, name as name 
+                  from company
+                  where id_cmp = " . $code;
+        $builder = $sys->db->query($query);
+        $result = $builder->row()->short_code;
+
+        return $result;
+    }
+}
 /**
  * Get Root Group helper
  * @access  public
