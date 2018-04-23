@@ -1,0 +1,66 @@
+{% extends _layout %}
+
+{% block css %}
+    {# -- the comment -- #}
+    {{ css('datatables.css', 'all', 'css') }}
+    {{ css('select2.css', 'all', 'css') }}
+    {{ css('jquery.fileupload-ui.css', 'all', 'css') }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="breadcrumb">
+                <li><a href="#"></a><i class="fa fa-home"></i></li>
+                <li>Asset</li>
+                <li class="active">Asset Mutation</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget-container fluid-height">
+                <div class="heading">
+                    <i class="fa fa-calendar"></i>Asset Mutation
+                </div>
+
+                <div class="widget-content padded" >
+                    <div id="result">
+                        <table id="datatables" class="table table-bordered table-responsive" style="overflow-x:auto">
+                            <thead>
+                            <th width="55px">#</th>
+                            <th width="55px">Asset Code</th>
+                            {#<th width="55px">Barcode</th>#}
+                            <th>Asset Status</th>
+                            <th>Catalog Code</th>
+                            <th>Material Name</th>
+                            <th>Company Group</th>
+                            <th>Comtable</th>
+                            <th>Company</th>
+                            <th>Department</th>
+                            <th>Room</th>
+                            <th>User</th>
+                            <th width="100px">Action</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div><div class="clearfix"></div><br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {# -- the comment -- #}
+    {{ js('jquery.datatables.js', 'js') }}
+    {{ js('select2.js', 'js') }}
+    {{ js('bootstrap-fileupload.js', 'js') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            drawTable('{{ site_url('asset/api/list_mutation') }}');
+        });
+    </script>
+{% endblock %}

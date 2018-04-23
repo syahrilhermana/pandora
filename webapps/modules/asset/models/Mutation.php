@@ -1,22 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class AssetHeader extends CI_Model
+class Mutation extends CI_Model
 {
-//    var $table = 'asset_header';
-//    var $primary_key = 'asset_id';
-//    var $column_order = array(null, 'asset_id', 'asset_code');
-//    var $column_search = array('asset_code', 'material_name');
-//    var $order = array('asset_id' => 'asc');
-//    var $deleted = array('deleted_at' => DateTime::ATOM);
     var $table = 'asset_header';
     var $primary_key = 'asset_id';
     var $primary_key2 = 'asset_header.asset_id';
-    var $column_order = array(null, 'asset_header.asset_id','asset_header.asset_code', 'asset_header.asset_barcode', 'asset_header.material_name', 'company.name', 'department.name', 'room.name', 'user.name',null);
-    var $column_search = array('asset_header.asset_code','asset_header.asset_barcode', 'asset_header.asset_status', 'asset_header.catalog_code', 'asset_header.material_name', 'com_group.com_group_name AS com_group', 'adm_uom.adm_uom_name AS adm_uom', 'asset_header.acquisition_cost', 'asset_header.acquisition_date', 'asset_header.depreciation', 'asset_header.actual_price', 'asset_header.status','asset_header.comtable', 'company.name AS company', 'department.name AS department', 'room.name AS room', 'user.name AS user');
-    var $select_field = 'asset_header.asset_id,asset_header.asset_code, asset_header.asset_barcode,asset_header.asset_status, asset_header.catalog_code, asset_header.material_name, com_group.com_group_name AS com_group,adm_uom.adm_uom_name AS adm_uom, asset_header.acquisition_cost, asset_header.acquisition_date, asset_header.depreciation, asset_header.actual_price, asset_header.status,asset_header.comtable, company.name AS company, department.name AS department, room.name AS room, user.name AS user';
+    var $column_order = array(null, 'asset_header.asset_id','asset_header.asset_code', 'asset_header.asset_status', 'asset_header.catalog_code', 'asset_header.material_name', 'com_group.com_group_name AS com_group', 'adm_uom.adm_uom_name AS adm_uom', 'asset_header.acquisition_cost', 'asset_header.acquisition_date', 'asset_header.depreciation', 'asset_header.actual_price', 'asset_header.status','asset_header.comtable', 'company.name', 'department.name', 'room.name', 'user.name');
+    var $column_search = array('asset_header.asset_code', 'asset_header.asset_status', 'asset_header.catalog_code', 'asset_header.material_name', 'com_group.com_group_name AS com_group', 'adm_uom.adm_uom_name AS adm_uom', 'asset_header.acquisition_cost', 'asset_header.acquisition_date', 'asset_header.depreciation', 'asset_header.actual_price', 'asset_header.status','asset_header.comtable', 'company.name AS company', 'department.name AS department', 'room.name AS room', 'user.name AS user');
+    var $select_field = 'asset_header.asset_id,asset_header.asset_code, asset_header.asset_status, asset_header.catalog_code, asset_header.material_name, com_group.com_group_name AS com_group,adm_uom.adm_uom_name AS adm_uom, asset_header.acquisition_cost, asset_header.acquisition_date, asset_header.depreciation, asset_header.actual_price, asset_header.status,asset_header.comtable, company.name AS company, department.name AS department, room.name AS room, user.name AS user';
     var $order = array('asset_header.asset_id' => 'asc');
     var $deleted = array('deleted_at' => DateTime::ATOM);
+
 
     /**
      * Generator field for search table
@@ -24,13 +19,14 @@ class AssetHeader extends CI_Model
     private function _get_field_query()
     {
         $this->db->select($this->select_field)
-            ->from($this->table)
-            ->join('department','asset_header.department = department.id_dpt','LEFT')
-            ->join('company','asset_header.company = company.id_cmp','LEFT')
-            ->join('room','asset_header.room = room.id_room','LEFT')
-            ->join('user','asset_header.user=user.id_user','LEFT')
-            ->join('com_group','asset_header.com_group = com_group.com_group_id','LEFT')
-            ->join('adm_uom','asset_header.adm_uom=adm_uom.adm_uom_id','LEFT');        $i = 0;
+                 ->from($this->table)
+                 ->join('department','asset_header.department = department.id_dpt','LEFT')
+                 ->join('company','asset_header.company = company.id_cmp','LEFT')
+                 ->join('room','asset_header.room = room.id_room','LEFT')
+                 ->join('user','asset_header.user=user.id_user','LEFT')
+                 ->join('com_group','asset_header.com_group = com_group.com_group_id','LEFT')
+                 ->join('adm_uom','asset_header.adm_uom=adm_uom.adm_uom_id','LEFT');
+        $i = 0;
         foreach ($this->column_search as $item)
         {
             if(!empty($_GET['search']['value']))
@@ -70,7 +66,9 @@ class AssetHeader extends CI_Model
         if(!$id)
         {
             $this->db->insert($this->table, $object);
-            return $this->db->insert_id();
+            $insert = $this->db->insert_id();
+            log_message('DEBUG','save mutation'.$insert);
+            return $insert;
         } else {
             $this->db->where($this->primary_key, $id)->update($this->table, $object);
             return $id;
@@ -152,7 +150,7 @@ class AssetHeader extends CI_Model
             return $this->db->limit($limit, $offset)->get()->result();
         } else {
             $dataa = $this->db->get();
-            log_message('DEBUG','DATA ASSET ASSET ASSET = '. $dataa);
+            log_message('DEBUG','DATA MUTASI ASSET = '. $dataa);
             return $dataa->result();
         }
     }
